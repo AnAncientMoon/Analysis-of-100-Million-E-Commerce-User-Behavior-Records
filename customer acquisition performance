@@ -1,0 +1,31 @@
+--create temporary table
+create table tmp like user_behavior;
+insert into tmp select * from user_behavior limit 100000;
+
+select * from tmp;
+
+
+--Page Views
+select dates,count(*) as 'PV' from tmp where behavior_type = 'pv' group by dates; 
+
+
+--Unique Visitors
+select dates,count(distinct user_id) as 'UV' from tmp where behavior_type = 'pv' group by dates;
+
+
+--Pages per Session
+--PV/UV
+select dates,count(*) as 'PV'，count(distinct user_id) as 'UV'，round(count(*)/count(distinct user_id),1) as 'PV/UV' from tmp where behavior_type = 'pv' group by dates; 
+
+--process true data
+create table ca(
+dates char(10),
+PV int(9),
+UV int(9),
+PUV decimal(10,1)
+);
+
+insert into ca select dates,count(*) as 'PV'，count(distinct user_id) as 'UV'，round(count(*)/count(distinct user_id),1) as 'PV/UV' from user_behavior where behavior_type = 'pv' group by dates; 
+select * from ca;
+
+--delete from ca where dates is null;
