@@ -1,0 +1,66 @@
+/* 
+Three-Step Data Preprocessing
+
+1.Handling Missing Values
+
+2.Removing Duplicate Records
+
+3.Detecting and Removing Outliers 
+*/
+
+use taobao;
+
+--check null Check values
+select * from user_behavior where user_id is null;
+select * from user_behavior where item_id is null;
+select * from user_behavior where category_id is null;
+select * from user_behavior where behavior_type is null;
+select * from user_behavior where ts is null;
+
+
+--Check duplicate values
+select user_id,item_id,ts from user_behavior
+group by user_id,item_id,ts 
+having count(*)>1;
+
+--Deduplication
+alter table user_behavior add id int first;
+select * from user_behavior limit 5;
+alter table user_behavior modify id int primary key auto_increment;
+
+delete user_behavior from user_behavior,
+（
+select user_id,item_id,ts,min(id) id from user_behavior
+group by user_id,item_id.ts
+having count(*)>1;
+) t2
+where user_behavior.user_id = t2.user_id
+and user_behavior.item_id = t2.item_id
+and user_behavior.ts = t2.ts
+and user_behavior.id > t2.id
+
+
+--create:date time hour
+--alter buffer value
+show varibles like '%_buffer%';
+set global innodb_buffer_size = 10700000000;
+show varibles like '%_buffer%';
+--datetime
+alter table user_behavior add datetimes timestamp(0);
+update user_behavior set datetimes = from_unixtime(ts);
+select * from user_behavior limit 5;
+--date
+alter table user_behavior add dates char(10);
+alter table user_behavior add times char(8);
+alter table user_behavior add hours char(2);
+update user_behavior set dates = substring(datetimes,1,10),times = substring(datetimes,12,8),hours = substring(datetimes,12,2);
+select * from user_behavior limit 5;
+
+
+--check outliers
+select max(datetimes),min(datetimes) from user_behavior;
+delete from user_behavior where datetimes < '2017-11-25 00:00:00' or datetimes > '2017-12-03 23:59:59';
+
+desc user_behavior;
+select * from user_behavior limit 5;
+select count(*) from user_behavior;
