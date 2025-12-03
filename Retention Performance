@@ -1,13 +1,9 @@
 --Retention Rate
-select usr_id,dates from tmp group by user_id,dates;
-
-select user_id,min(dates) as register_day from tmp group by user_id 
-
 select 
   a.register_day,
   count(distinct a.user_id) as new_user,
-  count(distinct if(datediff(b.dates,a.register_day) = 1,a.user_id,null)/count(distinct a.user_id)*100 as remain_1,
-  count(distinct if(datediff(b.dates,a.register_day) = 3,a.user_id,null)/count(distinct a.user_id)*100 as remain_3
+  count(distinct if(datediff(b.dates,a.register_day) = 1,a.user_id,null))/count(distinct a.user_id)*100 as remain_1,
+  count(distinct if(datediff(b.dates,a.register_day) = 3,a.user_id,null))/count(distinct a.user_id)*100 as remain_3
 from 
   (select user_id,min(dates) as register_day from tmp group by user_id) a
 join
