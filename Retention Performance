@@ -6,7 +6,7 @@ select
   count(distinct if(datediff(b.dates,a.register_day) = 3,a.user_id,null))/count(distinct a.user_id)*100 as remain_3
 from 
   (select user_id,min(dates) as register_day from tmp group by user_id) a
-join
+left join
   tmp b
 on
   a.user_id = b.user_id and b.dates > a.register_day 
