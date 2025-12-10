@@ -47,6 +47,7 @@ set global innodb_buffer_pool_size = 10700000000;
 show variables like '%_buffer%';
 --datetime
 alter table user_behavior add datetimes timestamp(0);
+--这个timestamp挺有意思的，会根据时区显示不同时间，比如我下载的表格里有一条1511750828的ts记录，在中国显示的就是2017-11-27 10:47:08 而在日本显示就是2017-11-27 11:47:08
 update user_behavior set datetimes = from_unixtime(ts);
 select * from user_behavior limit 5;
 --date
