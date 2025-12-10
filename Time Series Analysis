@@ -1,6 +1,6 @@
 --select 'action'
 
-selecty dates,hours,
+select dates,hours,
 count(if(behavior_type = 'pv',behavior_type,null)) as 'pv',
 count(if(behavior_type = 'cart',behavior_type,null)) as 'cart',
 count(if(behavior_type = 'fav',behavior_type,null)) as 'fav',
@@ -13,13 +13,14 @@ order by dates,hours
 
 create table date_hour_behavior(
 dates char(10),
-hour(2),
+hours char(2),
 pv int,
+cart int,
 fav int,
 buy int);
 
 insert into date_hour_behavior
-selecty dates,hours,
+select dates,hours,
 count(if(behavior_type = 'pv',behavior_type,null)) as 'pv',
 count(if(behavior_type = 'cart',behavior_type,null)) as 'cart',
 count(if(behavior_type = 'fav',behavior_type,null)) as 'fav',
