@@ -11,7 +11,7 @@ behavior_type varchar(5),
 user_num int
 );
 
-iunsert into behavior_user_num 
+insert into behavior_user_num 
 select behavior_type,
 count(distinct user_id) as user_num
 from user_behavior
