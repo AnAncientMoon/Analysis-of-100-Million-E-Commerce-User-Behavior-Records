@@ -19,3 +19,29 @@ group by behavior_type
 order by behavior_type desc;
 
 select * from behavior_user_num;
+
+select 672404/984105
+
+--action number
+select behavior_type,
+count(*) as act_num
+from tmp
+group by behavior_type
+order by behavior_type desc;
+
+--save 
+create table behavior_action_num(
+behavior_type varchar(5),
+user_num int
+);
+
+insert into behavior_action_num 
+select behavior_type,
+count(*) as act_num
+from user_behevior
+group by behavior_type
+order by behavior_type desc;
+
+select * from behavior_action_num;
+
+select 2015804/89660670
