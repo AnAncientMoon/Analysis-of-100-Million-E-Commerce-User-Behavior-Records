@@ -1,1 +1,33 @@
-select 'action';
+--select 'action'
+
+selecty dates,hours,
+count(if(behavior_type = 'pv',behavior_type,null)) as 'pv',
+count(if(behavior_type = 'cart',behavior_type,null)) as 'cart',
+count(if(behavior_type = 'fav',behavior_type,null)) as 'fav',
+count(if(behavior_type = 'buy',behavior_type,null)) as 'buy'
+from tmp 
+group by dates,hours
+order by dates,hours
+
+--save
+
+create table date_hour_behavior(
+dates char(10),
+hour(2),
+pv int,
+fav int,
+buy int);
+
+insert into date_hour_behavior
+selecty dates,hours,
+count(if(behavior_type = 'pv',behavior_type,null)) as 'pv',
+count(if(behavior_type = 'cart',behavior_type,null)) as 'cart',
+count(if(behavior_type = 'fav',behavior_type,null)) as 'fav',
+count(if(behavior_type = 'buy',behavior_type,null)) as 'buy'
+from user_behavior
+group by dates,hours
+order by dates,hours
+
+select * from date_hour_behavior;
+
+--connect to tableau
