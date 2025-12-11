@@ -33,7 +33,7 @@ where behavior_type = 'buy'
 group by user_id
 order by 2 desc,3 desc;
 
-select * from rfm_model;
+select * from rfm_model limit 10;
 
 --Segment users based on their purchase frequency
 alter table rfm_model add column fscore int;
@@ -55,7 +55,7 @@ when recent in ('2017-11-29','2017-11-30') then 3
 when recent in ('2017-11-27','2017-11-28') then 2
 else 1 end;
 
-select * from rfm_model;
+select * from rfm_model limit 10;
 
 --Segment
 set @f_avg = null;
