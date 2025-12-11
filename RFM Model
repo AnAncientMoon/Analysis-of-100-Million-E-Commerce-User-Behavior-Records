@@ -1,0 +1,84 @@
+--Recent buy time
+select user_id,max(dates) as '最近购买时间'
+from user_behaivior
+where behavior_type = 'buy'
+group by user_id
+order by 2 desc;
+
+--buy times
+select user_id,count(behavior_type) as '购买次数'
+from user_behavior
+where behavior_type = 'buy'
+group by user_id
+order by 2 desc;
+
+--concat
+select user_id,count(behavior_type) as '购买次数',max(dates) as '最近购买时间'
+from user_behavior
+where behavior_type = 'buy'
+group by user_id
+order by 2 desc,3 desc;
+
+--save
+create table rfm_model(
+user_id int,
+frequency int,
+recent char(10)
+);
+
+insert into rfm_model
+select user_id,count(behavior_type) as '购买次数',max(dates) as '最近购买时间'
+from user_behavior
+where behavior_type = 'buy'
+group by user_id
+order by 2 desc,3 desc;
+
+select * from rfm_model;
+
+--Segment users based on their purchase frequency
+alter table rfm_model add column fscore int;
+
+update rfm_model set fscore = case
+when frequency between 100 and 262 then 5
+when frequency between 50 and 99 then 4
+when frequency between 20 and 49 then 3
+when frequency between 5 and 20 then 2
+else 1 end;
+--尝试改为分位数 20%
+
+alter table rfm_model add column rscore int;
+
+update rfm_model set rscore = case 
+when recent = '2017-12-03' then 5
+when recent in ('2017-12-01','2017-12-02') then 4
+when recent in ('2017-11-29','2017-11-30') then 3
+when recent in ('2017-11-27','2017-11-28') then 2
+else 1 end;
+
+select * from rfm_model;
+
+--Segment
+set @f_avg = null;
+set @r_avg = null;
+select avg(fscore) into @f_avg from rfm_model;
+select avg(rscore) into @r_avg from rfm_model;
+
+select *,(case
+when fscore > @f_avg and rscore > @r_avg then '价值用户'
+when fscore > @f_avg and rscore < @r_avg then '保持用户'
+when fscore < @f_avg and rscore > @r_avg then '发展用户'
+when fscore < @f_avg and rscore < @r_avg then '挽留用户'
+end) class
+from rfm_model;
+
+alter table rfm_model add column class varchar(40);
+update rfm_model set class = case
+when fscore > @f_avg and rscore > @r_avg then '价值用户'
+when fscore > @f_avg and rscore < @r_avg then '保持用户'
+when fscore < @f_avg and rscore > @r_avg then '发展用户'
+when fscore < @f_avg and rscore < @r_avg then '挽留用户'
+end ;
+
+--calculate
+select class,count(user_id) from rfm_model
+group by class;
