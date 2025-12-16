@@ -45,6 +45,15 @@ when frequency between 20 and 49 then 3
 when frequency between 5 and 20 then 2
 else 1 end;
 --尝试改为分位数 20%
+update rfm_model r
+join (
+    select user_id,
+           ntile(5) over (order by frequency desc) as fscore_new
+    from rfm_model
+) t
+on r.user_id = t.user_id
+set r.fscore = t.fscore_new;
+
 
 alter table rfm_model add column rscore int;
 
